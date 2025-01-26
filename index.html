@@ -1,0 +1,909 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>건강 체크 리스트</title>
+    <style>
+        body { 
+            font-family: "바탕체"; 
+            background-color: #E0FFFF; 
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { 
+            font-weight: 900;
+            font-size: 3em;
+            text-align: center;
+            color: #333;
+            margin-top: 50px;
+        }
+        h2 { 
+            font-weight: 900;
+            font-size: 2em;
+            color: #333;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 15px; 
+            text-align: center;
+        }
+        th { 
+            background-color: #40E0D0; 
+            color: white; 
+            font-size: 1.4em;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.4em; 
+            font-family: "바탕체";
+            font-weight: bold;
+            border: 2px solid #40E0D0;
+            border-radius: 5px;
+        }
+        select {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.4em; 
+            font-family: "바탕체";
+            font-weight: bold;
+            border: 2px solid #40E0D0;
+            border-radius: 5px;
+        }
+        button {
+            padding: 15px 25px;
+            font-size: 1.4em; 
+            font-family: "바탕체";
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .add-btn { background-color: #40E0D0; }
+        .edit-btn { background-color: #4CAF50; }
+        .delete-btn { background-color: #FF6B6B; }
+        .food-photo {
+            max-width: 200px;
+            cursor: pointer;
+        }
+        .calendar {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .date-buttons {
+            margin: 10px 0;
+        }
+        .date-buttons button {
+            margin: 0 5px;
+            padding: 15px 30px;
+            min-width: 150px;
+            font-size: 1.4em; 
+        }
+        .date-select {
+            font-size: 1.8em; 
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .date-select select {
+            font-size: 1em;
+            padding: 10px 15px;
+            margin: 0 10px;
+            border: 2px solid #40E0D0;
+            border-radius: 5px;
+            width: auto;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            padding: 12px;
+            font-size: 1.3em;
+            font-family: "바탕체";
+            border: 2px solid #40E0D0;
+            border-radius: 5px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>건강 체크 리스트</h1>
+
+    <div class="calendar">
+        <div class="date-select">
+            <select id="yearSelect" onchange="changeDate()"></select>년
+            <select id="monthSelect" onchange="changeDate()">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+            </select>월
+            <select id="daySelect" onchange="changeDate()"></select>일
+        </div>
+        <div class="date-buttons">
+            <button class="add-btn" onclick="showPreviousDay()">◀ 이전날</button>
+            <button class="add-btn" onclick="showToday()">오늘</button>
+            <button class="add-btn" onclick="showNextDay()">다음날 ▶</button>
+        </div>
+    </div>
+    
+    <h2>식사량 체크</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>날짜</th>
+                <th>시간</th>
+                <th>음식명</th>
+                <th>사진</th>
+                <th>식사량</th>
+                <th>관리</th>
+            </tr>
+        </thead>
+        <tbody id="mealList">
+            <tr id="inputRow">
+                <td class="date"></td>
+                <td class="time"></td>
+                <td><input type="text" placeholder="음식명을 입력하세요"></td>
+                <td><input type="file" accept="image/*"></td>
+                <td>
+                    <select>
+                        <option>선택하세요</option>
+                        <option>적음</option>
+                        <option>보통</option>
+                        <option>많음</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="add-btn" onclick="saveRecord()">저장</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>혈압 체크</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>날짜</th>
+                <th>시간</th>
+                <th>구분</th>
+                <th>수축기</th>
+                <th>이완기</th>
+                <th>관리</th>
+            </tr>
+        </thead>
+        <tbody id="bpList">
+            <tr id="bpInputRow">
+                <td class="date"></td>
+                <td class="time"></td>
+                <td>
+                    <select>
+                        <option>선택하세요</option>
+                        <option>아침</option>
+                        <option>저녁</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" placeholder="수축기 혈압" style="width: 100px;">
+                </td>
+                <td>
+                    <input type="number" placeholder="이완기 혈압" style="width: 100px;">
+                </td>
+                <td>
+                    <button class="add-btn" onclick="saveBPRecord()">저장</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>소변량 체크</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>날짜</th>
+                <th>시간</th>
+                <th>소변량</th>
+                <th>관리</th>
+            </tr>
+        </thead>
+        <tbody id="urineList">
+            <tr id="urineInputRow">
+                <td class="date"></td>
+                <td class="time"></td>
+                <td>
+                    <select>
+                        <option>선택하세요</option>
+                        <option>적음</option>
+                        <option>보통</option>
+                        <option>많음</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="add-btn" onclick="saveUrineRecord()">저장</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        let selectedDate = new Date();
+
+        // 연도 범위 설정 (현재 연도 ±5년)
+        function setupYearSelect() {
+            const yearSelect = document.getElementById('yearSelect');
+            const currentYear = new Date().getFullYear();
+            for(let i = currentYear - 5; i <= currentYear + 5; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        // 해당 월의 일수 계산
+        function getDaysInMonth(year, month) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        // 일 선택 옵션 업데이트
+        function updateDaySelect(year, month) {
+            const daySelect = document.getElementById('daySelect');
+            const currentDay = daySelect.value;
+            const daysInMonth = getDaysInMonth(year, month);
+            
+            daySelect.innerHTML = '';
+            for(let i = 1; i <= daysInMonth; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                daySelect.appendChild(option);
+            }
+            
+            // 기존 선택된 일자가 새 월의 일수 범위 안에 있으면 유지
+            if (currentDay <= daysInMonth) {
+                daySelect.value = currentDay;
+            }
+        }
+
+        // 날짜 변경 시 호출
+        function changeDate() {
+            const year = document.getElementById('yearSelect').value;
+            const month = document.getElementById('monthSelect').value;
+            const day = document.getElementById('daySelect').value;
+            
+            selectedDate = new Date(year, month - 1, day);
+            updateDateDisplay();
+            updateDateTime();
+            loadRecords();
+            loadBPRecords();
+            loadUrineRecords();
+        }
+
+        // 날짜 표시 업데이트
+        function updateDateDisplay() {
+            const year = selectedDate.getFullYear();
+            const month = selectedDate.getMonth() + 1;
+            const day = selectedDate.getDate();
+            document.querySelector('.date').textContent = `${year}. ${month}. ${day}.`;
+        }
+
+        // 현재 시간 표시
+        function updateDateTime() {
+            const now = new Date();
+            document.querySelector('.time').textContent = now.toLocaleTimeString();
+        }
+
+        // 페이지 로드 시 실행
+        window.onload = function() {
+            setupYearSelect();
+            
+            // 현재 날짜로 선택 상태 초기화
+            const now = new Date();
+            document.getElementById('yearSelect').value = now.getFullYear();
+            document.getElementById('monthSelect').value = now.getMonth() + 1;
+            updateDaySelect(now.getFullYear(), now.getMonth() + 1);
+            document.getElementById('daySelect').value = now.getDate();
+            
+            updateDateTime();
+            loadRecords();
+            loadBPRecords();
+            loadUrineRecords();
+        }
+
+        // 이전날/다음날/오늘 버튼 클릭 시 select 값도 업데이트
+        function updateSelectValues() {
+            document.getElementById('yearSelect').value = selectedDate.getFullYear();
+            document.getElementById('monthSelect').value = selectedDate.getMonth() + 1;
+            updateDaySelect(selectedDate.getFullYear(), selectedDate.getMonth() + 1);
+            document.getElementById('daySelect').value = selectedDate.getDate();
+        }
+
+        // 기존 함수들 수정
+        function showPreviousDay() {
+            selectedDate.setDate(selectedDate.getDate() - 1);
+            updateSelectValues();
+            updateDateDisplay();
+            updateDateTime();
+            loadRecords();
+            loadBPRecords();
+            loadUrineRecords();
+        }
+
+        function showNextDay() {
+            selectedDate.setDate(selectedDate.getDate() + 1);
+            updateSelectValues();
+            updateDateDisplay();
+            updateDateTime();
+            loadRecords();
+            loadBPRecords();
+            loadUrineRecords();
+        }
+
+        function showToday() {
+            selectedDate = new Date();
+            updateSelectValues();
+            updateDateDisplay();
+            updateDateTime();
+            loadRecords();
+            loadBPRecords();
+            loadUrineRecords();
+        }
+
+        // 저장 기능
+        function saveRecord() {
+            const inputRow = document.getElementById('inputRow');
+            const foodInput = inputRow.querySelector('input[type="text"]');
+            const photoInput = inputRow.querySelector('input[type="file"]');
+            const amountSelect = inputRow.querySelector('select');
+
+            // 입력 검증
+            if (!foodInput.value || amountSelect.value === "선택하세요") {
+                alert("음식명과 식사량을 모두 입력해주세요.");
+                return;
+            }
+
+            // 새로운 행 생성
+            const newRow = document.createElement('tr');
+            
+            // 날짜와 시간
+            newRow.insertCell(0).textContent = selectedDate.toLocaleDateString();
+            newRow.insertCell(1).textContent = new Date().toLocaleTimeString();
+            
+            // 음식명
+            newRow.insertCell(2).textContent = foodInput.value;
+            
+            // 사진
+            const photoCell = newRow.insertCell(3);
+            if (photoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'food-photo';
+                    photoCell.appendChild(img);
+                    saveToLocalStorage();  // 사진 로드 후 저장
+                };
+                reader.readAsDataURL(photoInput.files[0]);
+            }
+            
+            // 식사량
+            newRow.insertCell(4).textContent = amountSelect.value;
+            
+            // 관리 버튼
+            const btnCell = newRow.insertCell(5);
+            btnCell.innerHTML = `
+                <button class="edit-btn" onclick="editRecord(this)">수정</button>
+                <button class="delete-btn" onclick="deleteRecord(this)">삭제</button>
+            `;
+
+            // 입력행 다음에 새로운 행 추가
+            inputRow.parentNode.insertBefore(newRow, inputRow.nextSibling);
+            
+            // 입력란 초기화
+            foodInput.value = '';
+            photoInput.value = '';
+            amountSelect.value = '선택하세요';
+            
+            saveToLocalStorage();
+        }
+
+        // localStorage에 저장
+        function saveToLocalStorage() {
+            const records = {};
+            const rows = document.getElementById('mealList').rows;
+            
+            // 입력행을 제외한 모든 행의 데이터 수집
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const date = row.cells[0].textContent;
+                
+                if (!records[date]) {
+                    records[date] = [];
+                }
+                
+                records[date].push({
+                    time: row.cells[1].textContent,
+                    food: row.cells[2].textContent,
+                    photo: row.cells[3].querySelector('img')?.src || '',
+                    amount: row.cells[4].textContent
+                });
+            }
+            
+            localStorage.setItem('mealRecords', JSON.stringify(records));
+        }
+
+        // 저장된 데이터 불러오기
+        function loadRecords() {
+            const records = JSON.parse(localStorage.getItem('mealRecords') || '{}');
+            const currentDate = selectedDate.toLocaleDateString();
+            const tbody = document.getElementById('mealList');
+            
+            // 입력행을 제외한 모든 행 제거
+            while (tbody.rows.length > 1) {
+                tbody.deleteRow(1);
+            }
+            
+            // 현재 날짜의 기록만 표시
+            if (records[currentDate]) {
+                records[currentDate].forEach(record => {
+                    const row = tbody.insertRow(-1);
+                    
+                    row.insertCell(0).textContent = currentDate;
+                    row.insertCell(1).textContent = record.time;
+                    row.insertCell(2).textContent = record.food;
+                    
+                    const photoCell = row.insertCell(3);
+                    if (record.photo) {
+                        const img = document.createElement('img');
+                        img.src = record.photo;
+                        img.className = 'food-photo';
+                        photoCell.appendChild(img);
+                    }
+                    
+                    row.insertCell(4).textContent = record.amount;
+                    
+                    const btnCell = row.insertCell(5);
+                    btnCell.innerHTML = `
+                        <button class="edit-btn" onclick="editRecord(this)">수정</button>
+                        <button class="delete-btn" onclick="deleteRecord(this)">삭제</button>
+                    `;
+                });
+            }
+        }
+
+        // 삭제 기능
+        function deleteRecord(btn) {
+            if (confirm('이 기록을 삭제하시겠습니까?')) {
+                btn.closest('tr').remove();
+                saveToLocalStorage();
+            }
+        }
+
+        // 혈압 기록 저장
+        function saveBPRecord() {
+            const inputRow = document.getElementById('bpInputRow');
+            const periodSelect = inputRow.querySelector('select');
+            const systolicInput = inputRow.querySelector('input[placeholder="수축기 혈압"]');
+            const diastolicInput = inputRow.querySelector('input[placeholder="이완기 혈압"]');
+
+            // 입력 검증
+            if (periodSelect.value === "선택하세요" || !systolicInput.value || !diastolicInput.value) {
+                alert("모든 항목을 입력해주세요.");
+                return;
+            }
+
+            // 새로운 행 생성
+            const newRow = document.createElement('tr');
+            
+            // 날짜와 시간
+            newRow.insertCell(0).textContent = selectedDate.toLocaleDateString();
+            newRow.insertCell(1).textContent = new Date().toLocaleTimeString();
+            
+            // 구분, 수축기, 이완기
+            newRow.insertCell(2).textContent = periodSelect.value;
+            newRow.insertCell(3).textContent = systolicInput.value;
+            newRow.insertCell(4).textContent = diastolicInput.value;
+            
+            // 관리 버튼
+            const btnCell = newRow.insertCell(5);
+            btnCell.innerHTML = `
+                <button class="edit-btn" onclick="editBPRecord(this)">수정</button>
+                <button class="delete-btn" onclick="deleteBPRecord(this)">삭제</button>
+            `;
+
+            // 입력행 다음에 새로운 행 추가
+            inputRow.parentNode.insertBefore(newRow, inputRow.nextSibling);
+            
+            // 입력란 초기화
+            periodSelect.value = '선택하세요';
+            systolicInput.value = '';
+            diastolicInput.value = '';
+            
+            saveBPToLocalStorage();
+        }
+
+        // localStorage에 혈압 데이터 저장
+        function saveBPToLocalStorage() {
+            const records = {};
+            const rows = document.getElementById('bpList').rows;
+            
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const date = row.cells[0].textContent;
+                
+                if (!records[date]) {
+                    records[date] = [];
+                }
+                
+                records[date].push({
+                    time: row.cells[1].textContent,
+                    period: row.cells[2].textContent,
+                    systolic: row.cells[3].textContent,
+                    diastolic: row.cells[4].textContent
+                });
+            }
+            
+            localStorage.setItem('bpRecords', JSON.stringify(records));
+        }
+
+        // 혈압 데이터 불러오기
+        function loadBPRecords() {
+            const records = JSON.parse(localStorage.getItem('bpRecords') || '{}');
+            const currentDate = selectedDate.toLocaleDateString();
+            const tbody = document.getElementById('bpList');
+            
+            // 입력행을 제외한 모든 행 제거
+            while (tbody.rows.length > 1) {
+                tbody.deleteRow(1);
+            }
+            
+            // 현재 날짜의 기록만 표시
+            if (records[currentDate]) {
+                records[currentDate].forEach(record => {
+                    const row = tbody.insertRow(-1);
+                    
+                    row.insertCell(0).textContent = currentDate;
+                    row.insertCell(1).textContent = record.time;
+                    row.insertCell(2).textContent = record.period;
+                    row.insertCell(3).textContent = record.systolic;
+                    row.insertCell(4).textContent = record.diastolic;
+                    
+                    const btnCell = row.insertCell(5);
+                    btnCell.innerHTML = `
+                        <button class="edit-btn" onclick="editBPRecord(this)">수정</button>
+                        <button class="delete-btn" onclick="deleteBPRecord(this)">삭제</button>
+                    `;
+                });
+            }
+        }
+
+        // 혈압 기록 삭제
+        function deleteBPRecord(btn) {
+            if (confirm('이 기록을 삭제하시겠습니까?')) {
+                btn.closest('tr').remove();
+                saveBPToLocalStorage();
+            }
+        }
+
+        // 소변량 기록 저장
+        function saveUrineRecord() {
+            const inputRow = document.getElementById('urineInputRow');
+            const amountSelect = inputRow.querySelector('select');
+
+            // 입력 검증
+            if (amountSelect.value === "선택하세요") {
+                alert("소변량을 선택해주세요.");
+                return;
+            }
+
+            // 새로운 행 생성
+            const newRow = document.createElement('tr');
+            
+            // 날짜와 시간
+            newRow.insertCell(0).textContent = selectedDate.toLocaleDateString();
+            newRow.insertCell(1).textContent = new Date().toLocaleTimeString();
+            
+            // 소변량
+            newRow.insertCell(2).textContent = amountSelect.value;
+            
+            // 관리 버튼
+            const btnCell = newRow.insertCell(3);
+            btnCell.innerHTML = `
+                <button class="edit-btn" onclick="editUrineRecord(this)">수정</button>
+                <button class="delete-btn" onclick="deleteUrineRecord(this)">삭제</button>
+            `;
+
+            // 입력행 다음에 새로운 행 추가
+            inputRow.parentNode.insertBefore(newRow, inputRow.nextSibling);
+            
+            // 입력란 초기화
+            amountSelect.value = '선택하세요';
+            
+            saveUrineToLocalStorage();
+        }
+
+        // localStorage에 소변량 데이터 저장
+        function saveUrineToLocalStorage() {
+            const records = {};
+            const rows = document.getElementById('urineList').rows;
+            
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const date = row.cells[0].textContent;
+                
+                if (!records[date]) {
+                    records[date] = [];
+                }
+                
+                records[date].push({
+                    time: row.cells[1].textContent,
+                    amount: row.cells[2].textContent
+                });
+            }
+            
+            localStorage.setItem('urineRecords', JSON.stringify(records));
+        }
+
+        // 소변량 데이터 불러오기
+        function loadUrineRecords() {
+            const records = JSON.parse(localStorage.getItem('urineRecords') || '{}');
+            const currentDate = selectedDate.toLocaleDateString();
+            const tbody = document.getElementById('urineList');
+            
+            // 입력행을 제외한 모든 행 제거
+            while (tbody.rows.length > 1) {
+                tbody.deleteRow(1);
+            }
+            
+            // 현재 날짜의 기록만 표시
+            if (records[currentDate]) {
+                records[currentDate].forEach(record => {
+                    const row = tbody.insertRow(-1);
+                    
+                    row.insertCell(0).textContent = currentDate;
+                    row.insertCell(1).textContent = record.time;
+                    row.insertCell(2).textContent = record.amount;
+                    
+                    const btnCell = row.insertCell(3);
+                    btnCell.innerHTML = `
+                        <button class="edit-btn" onclick="editUrineRecord(this)">수정</button>
+                        <button class="delete-btn" onclick="deleteUrineRecord(this)">삭제</button>
+                    `;
+                });
+            }
+        }
+
+        // 소변량 기록 삭제
+        function deleteUrineRecord(btn) {
+            if (confirm('이 기록을 삭제하시겠습니까?')) {
+                btn.closest('tr').remove();
+                saveUrineToLocalStorage();
+            }
+        }
+
+        // 식사량 수정 함수
+        function editRecord(btn) {
+            const row = btn.closest('tr');
+            const cells = row.cells;
+            
+            // 시간을 입력란으로 변경
+            const timeCell = cells[1];
+            const timeInput = document.createElement('input');
+            timeInput.type = 'time';
+            timeInput.value = convertTimeStringToValue(timeCell.textContent);
+            timeCell.textContent = '';
+            timeCell.appendChild(timeInput);
+            
+            // 음식명을 입력란으로 변경
+            const foodCell = cells[2];
+            const foodInput = document.createElement('input');
+            foodInput.type = 'text';
+            foodInput.value = foodCell.textContent;
+            foodCell.textContent = '';
+            foodCell.appendChild(foodInput);
+            
+            // 사진 업로드 가능하도록 변경
+            const photoCell = cells[3];
+            const photoInput = document.createElement('input');
+            photoInput.type = 'file';
+            photoInput.accept = 'image/*';
+            photoCell.appendChild(photoInput);
+            
+            // 식사량을 선택란으로 변경
+            const amountCell = cells[4];
+            const amountSelect = document.createElement('select');
+            ["선택하세요", "적음", "보통", "많음"].forEach(opt => {
+                const option = document.createElement('option');
+                option.text = opt;
+                if(opt === amountCell.textContent) option.selected = true;
+                amountSelect.add(option);
+            });
+            amountCell.textContent = '';
+            amountCell.appendChild(amountSelect);
+            
+            // 버튼 변경
+            const btnCell = cells[5];
+            btnCell.innerHTML = `
+                <button class="add-btn" onclick="saveEdit(this)">완료</button>
+                <button class="delete-btn" onclick="cancelEdit(this)">취소</button>
+            `;
+        }
+
+        // 혈압 수정 함수
+        function editBPRecord(btn) {
+            const row = btn.closest('tr');
+            const cells = row.cells;
+            
+            // 시간을 입력란으로 변경
+            const timeCell = cells[1];
+            const timeInput = document.createElement('input');
+            timeInput.type = 'time';
+            timeInput.value = convertTimeStringToValue(timeCell.textContent);
+            timeCell.textContent = '';
+            timeCell.appendChild(timeInput);
+            
+            // 구분을 선택란으로 변경
+            const periodCell = cells[2];
+            const periodSelect = document.createElement('select');
+            ["선택하세요", "아침", "저녁"].forEach(opt => {
+                const option = document.createElement('option');
+                option.text = opt;
+                if(opt === periodCell.textContent) option.selected = true;
+                periodSelect.add(option);
+            });
+            periodCell.textContent = '';
+            periodCell.appendChild(periodSelect);
+            
+            // 수축기 혈압을 입력란으로 변경
+            const systolicCell = cells[3];
+            const systolicInput = document.createElement('input');
+            systolicInput.type = 'number';
+            systolicInput.value = systolicCell.textContent;
+            systolicCell.textContent = '';
+            systolicCell.appendChild(systolicInput);
+            
+            // 이완기 혈압을 입력란으로 변경
+            const diastolicCell = cells[4];
+            const diastolicInput = document.createElement('input');
+            diastolicInput.type = 'number';
+            diastolicInput.value = diastolicCell.textContent;
+            diastolicCell.textContent = '';
+            diastolicCell.appendChild(diastolicInput);
+            
+            // 버튼 변경
+            const btnCell = cells[5];
+            btnCell.innerHTML = `
+                <button class="add-btn" onclick="saveBPEdit(this)">완료</button>
+                <button class="delete-btn" onclick="cancelBPEdit(this)">취소</button>
+            `;
+        }
+
+        // 소변량 수정 함수
+        function editUrineRecord(btn) {
+            const row = btn.closest('tr');
+            const cells = row.cells;
+            
+            // 시간을 입력란으로 변경
+            const timeCell = cells[1];
+            const timeInput = document.createElement('input');
+            timeInput.type = 'time';
+            timeInput.value = convertTimeStringToValue(timeCell.textContent);
+            timeCell.textContent = '';
+            timeCell.appendChild(timeInput);
+            
+            // 소변량을 선택란으로 변경
+            const amountCell = cells[2];
+            const amountSelect = document.createElement('select');
+            ["선택하세요", "적음", "보통", "많음"].forEach(opt => {
+                const option = document.createElement('option');
+                option.text = opt;
+                if(opt === amountCell.textContent) option.selected = true;
+                amountSelect.add(option);
+            });
+            amountCell.textContent = '';
+            amountCell.appendChild(amountSelect);
+            
+            // 버튼 변경
+            const btnCell = cells[3];
+            btnCell.innerHTML = `
+                <button class="add-btn" onclick="saveUrineEdit(this)">완료</button>
+                <button class="delete-btn" onclick="cancelUrineEdit(this)">취소</button>
+            `;
+        }
+
+        // 시간 문자열을 input type="time" 값으로 변환하는 함수
+        function convertTimeStringToValue(timeStr) {
+            const time = new Date(`1970/01/01 ${timeStr}`);
+            return `${String(time.getHours()).padStart(2, '0')}:${String(time.getMinutes()).padStart(2, '0')}`;
+        }
+
+        // 각 수정 완료 함수들
+        function saveEdit(btn) {
+            const row = btn.closest('tr');
+            const cells = row.cells;
+            
+            // 시간 업데이트
+            cells[1].textContent = cells[1].querySelector('input').value;
+            
+            cells[2].textContent = cells[2].querySelector('input').value;
+            cells[4].textContent = cells[4].querySelector('select').value;
+            
+            const photoInput = cells[3].querySelector('input');
+            if(photoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'food-photo';
+                    cells[3].innerHTML = '';
+                    cells[3].appendChild(img);
+                };
+                reader.readAsDataURL(photoInput.files[0]);
+            }
+            
+            cells[5].innerHTML = `
+                <button class="edit-btn" onclick="editRecord(this)">수정</button>
+                <button class="delete-btn" onclick="deleteRecord(this)">삭제</button>
+            `;
+            
+            saveToLocalStorage();
+        }
+
+        function saveBPEdit(btn) {
+            const row = btn.closest('tr');
+            const cells = row.cells;
+            
+            // 시간 업데이트
+            cells[1].textContent = cells[1].querySelector('input').value;
+            
+            cells[2].textContent = cells[2].querySelector('select').value;
+            cells[3].textContent = cells[3].querySelector('input').value;
+            cells[4].textContent = cells[4].querySelector('input').value;
+            
+            cells[5].innerHTML = `
+                <button class="edit-btn" onclick="editBPRecord(this)">수정</button>
+                <button class="delete-btn" onclick="deleteBPRecord(this)">삭제</button>
+            `;
+            
+            saveBPToLocalStorage();
+        }
+
+        function saveUrineEdit(btn) {
+            const row = btn.closest('tr');
+            const cells = row.cells;
+            
+            // 시간 업데이트
+            cells[1].textContent = cells[1].querySelector('input').value;
+            
+            cells[2].textContent = cells[2].querySelector('select').value;
+            
+            cells[3].innerHTML = `
+                <button class="edit-btn" onclick="editUrineRecord(this)">수정</button>
+                <button class="delete-btn" onclick="deleteUrineRecord(this)">삭제</button>
+            `;
+            
+            saveUrineToLocalStorage();
+        }
+    </script>
+</body>
+</html> 
